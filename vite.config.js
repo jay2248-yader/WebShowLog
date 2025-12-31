@@ -2,6 +2,8 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
+import { proxyConfig } from './proxy.config'
+
 export default defineConfig({
   plugins: [react(), tailwindcss()],
 
@@ -9,13 +11,7 @@ export default defineConfig({
     host: true,    
     port: 9005,     
 
-    proxy: {
-      '/api': {
-        target: 'http://30.30.30.222:65532',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, '')
-      }
-    }
+    proxy: proxyConfig
   },
 
   preview: {

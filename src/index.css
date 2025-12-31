@@ -3,9 +3,7 @@
 /* Tailwind v4 */
 @import "tailwindcss";
 
-/* react-date-range styles */
-@import "react-date-range/dist/styles.css";
-@import "react-date-range/dist/theme/default.css";
+
 
 /* Global font */
 body {

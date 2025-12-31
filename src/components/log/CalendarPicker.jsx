@@ -1,5 +1,6 @@
 import React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { MONTH_NAMES, DAY_NAMES, getDaysInMonth, getFirstDayOfMonth } from "../../utils/dateUtils";
 
 function CalendarPicker({ 
   currentMonth, 
@@ -12,11 +13,6 @@ function CalendarPicker({
 }) {
   const year = currentMonth.getFullYear();
   const month = currentMonth.getMonth();
-  const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-  const dayNames = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
-
-  const getDaysInMonth = (y, m) => new Date(y, m + 1, 0).getDate();
-  const getFirstDayOfMonth = (y, m) => new Date(y, m, 1).getDay();
 
   const daysInMonth = getDaysInMonth(year, month);
   const firstDay = getFirstDayOfMonth(year, month);
@@ -97,7 +93,7 @@ function CalendarPicker({
             <ChevronLeft className="w-5 h-5 text-[#0F75BC]" />
           </button>
           <div className="font-semibold text-[#0F75BC]">
-            {monthNames[month]} - {year}
+            {MONTH_NAMES[month]} - {year}
           </div>
           <button
             onClick={() => setCurrentMonth(new Date(year, month + 1, 1))}
@@ -109,7 +105,7 @@ function CalendarPicker({
       </div>
       <div className="p-3">
         <div className="grid grid-cols-7 gap-1 mb-2">
-          {dayNames.map((day) => (
+          {DAY_NAMES.map((day) => (
             <div key={day} className="h-9 flex items-center justify-center text-xs font-semibold text-gray-600">
               {day}
             </div>

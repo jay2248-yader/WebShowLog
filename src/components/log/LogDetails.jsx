@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { formatTimestamp } from "../../utils/dateUtils";
+import { formatJSONData } from "../../utils/formatUtils";
 
 function LogDetails({ log, onClose }) {
   const [isVisible, setIsVisible] = useState(false);
@@ -13,33 +15,6 @@ function LogDetails({ log, onClose }) {
   };
 
   if (!log) return null;
-
-  const formatTimestamp = (timestamp) => {
-    if (!timestamp || timestamp === "N/A") return "N/A";
-
-    try {
-      const date = new Date(timestamp);
-      const day = String(date.getDate()).padStart(2, "0");
-      const month = String(date.getMonth() + 1).padStart(2, "0");
-      const year = date.getFullYear();
-      const hours = String(date.getHours()).padStart(2, "0");
-      const minutes = String(date.getMinutes()).padStart(2, "0");
-      const seconds = String(date.getSeconds()).padStart(2, "0");
-
-      return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
-    } catch {
-      return timestamp;
-    }
-  };
-
-  const formatData = (dataString) => {
-    try {
-      const parsed = JSON.parse(dataString);
-      return JSON.stringify(parsed, null, 2);
-    } catch {
-      return dataString;
-    }
-  };
 
   return (
     <div
@@ -104,7 +79,7 @@ function LogDetails({ log, onClose }) {
   <div>
               <label className="text-sm font-medium text-gray-600">ຂໍ້ມູນ</label>
               <div className="mt-1 bg-gray-50 border border-gray-200 rounded p-4 text-sm text-gray-900 overflow-auto max-w-full" style={{ wordWrap: 'break-word', overflowWrap: 'break-word' }}>
-                {log.fullText || formatData(log.data)}
+                {log.fullText || formatJSONData(log.data)}
               </div>
             </div>
           </div>

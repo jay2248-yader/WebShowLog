@@ -1,18 +1,31 @@
+import { Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import HomeScreen from '../Screen/HomeScreen';
-import ShowLogScreen from '../Screen/ShowLogScreen';
+import { ROUTES } from './AppRouteConfig';
+
+const LoadingFallback = () => (
+  <div className="min-h-screen flex items-center justify-center">
+    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+  </div>
+);
 
 export default function AppRoutes() {
   return (
-    <Routes>
-      {/* ROOT → HOME (replace สำคัญมาก) */}
-      <Route path="/" element={<Navigate to="/home" replace />} />
+    <Suspense fallback={<LoadingFallback />}>
+      <Routes>
+        {/* ROOT → HOME */}
+        <Route path="/" element={<Navigate to="/home" replace />} />
 
-      <Route path="/home" element={<HomeScreen />} />
+        {ROUTES.map((route) => (
+          <Route
+            key={route.path}
+            path={route.path}
+            element={<route.element />}
+          />
+        ))}
 
-      <Route path="/:logType" element={<ShowLogScreen />} />
-
-      <Route path="*" element={<Navigate to="/home" replace />} />
-    </Routes>
+        {/* fallback */}
+        <Route path="*" element={<Navigate to="/home" replace />} />
+      </Routes>
+    </Suspense>
   );
 }
