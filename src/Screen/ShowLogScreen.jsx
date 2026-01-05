@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Navigate, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 
 
@@ -56,8 +56,39 @@ function ShowLogScreen() {
     return () => { mounted = false; };
   }, [location.search]);
 
+  const headerTitle = location.state && location.state.title ? location.state.title : 'CSC Sale';
+
   const filteredData = React.useMemo(() => {
     return logData.filter((row) => {
+      // แปลงเป็นตัวพิมพ์เล็กครั้งเดียว ใช้ร่วมกันได้ทุกหน้า
+      const actionLower = row.action.toLowerCase();
+      const dataLower = row.data.toLowerCase();
+      const hasLoginSystemsByMarketing =
+        actionLower.includes('login systems by marketing') ||
+        dataLower.includes('login systems by marketing');
+      const hasImage =
+        actionLower.includes('image') ||
+        dataLower.includes('image');
+
+      const isMarketingPage = headerTitle === 'CSC Marketing';
+      const isAdvancePage = headerTitle === 'CSC Advance';
+
+      // เงื่อนไขสำหรับ CSC Marketing:
+      // แสดงเฉพาะข้อมูลที่มีคำว่า "Login Systems by Marketing" หรือ "Image"
+      if (isMarketingPage) {
+        if (!hasLoginSystemsByMarketing && !hasImage) {
+          return false;
+        }
+      }
+
+      // เงื่อนไขสำหรับ CSC Advance:
+      // แสดงข้อมูลทั้งหมด ยกเว้นรายการที่มีคำว่า "Login Systems by Marketing" หรือ "Image"
+      if (isAdvancePage) {
+        if (hasLoginSystemsByMarketing || hasImage) {
+          return false;
+        }
+      }
+
       const searchLower = searchQuery.toLowerCase();
       const matchesSearch =
         searchQuery === "" ||
@@ -71,7 +102,7 @@ function ShowLogScreen() {
 
       return matchesSearch && matchesDateRange;
     });
-  }, [logData, searchQuery, startDate, endDate]);
+  }, [logData, searchQuery, startDate, endDate, headerTitle]);
 
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -94,8 +125,6 @@ function ShowLogScreen() {
   const handleCloseDetails = () => {
     setSelectedLog(null);
   };
-
-  const headerTitle = location.state && location.state.title ? location.state.title : 'CSC Sale';
 
   return (
     <div className="min-h-screen bg-gray-50">

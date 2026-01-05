@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { formatTimestamp } from "../../utils/dateUtils";
-import { formatJSONData } from "../../utils/formatUtils";
 
 function LogDetails({ log, onClose }) {
   const [isVisible, setIsVisible] = useState(false);
@@ -13,6 +12,12 @@ function LogDetails({ log, onClose }) {
     setIsVisible(false);
     setTimeout(onClose, 300);
   };
+
+  const rawText = React.useMemo(() => {
+    if (!log) return "";
+    if (log.fullText) return log.fullText;
+    return `USER: ${log.userCode}, ${log.action}, Data: ${log.data}, Date: ${log.timestamp}`;
+  }, [log]);
 
   if (!log) return null;
 
@@ -79,7 +84,7 @@ function LogDetails({ log, onClose }) {
   <div>
               <label className="text-sm font-medium text-gray-600">ຂໍ້ມູນ</label>
               <div className="mt-1 bg-gray-50 border border-gray-200 rounded p-4 text-sm text-gray-900 overflow-auto max-w-full" style={{ wordWrap: 'break-word', overflowWrap: 'break-word' }}>
-                {log.fullText || formatJSONData(log.data)}
+                {rawText}
               </div>
             </div>
           </div>
@@ -96,24 +101,7 @@ function LogDetails({ log, onClose }) {
         </div>
       </div>
 
-      {/* Animations */}
-      <style jsx>{`
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
 
-        .animate-fadeInUp {
-          animation: fadeInUp 0.5s ease-out forwards;
-          opacity: 0;
-        }
-      `}</style>
     </div>
   );
 }

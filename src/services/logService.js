@@ -4,8 +4,10 @@
  * @param {string} sourceUrl - The URL to fetch logs from.
  * @returns {Promise<Array>} - A promise that resolves to an array of parsed log objects.
  */
-export const fetchLogs = async (sourceUrl) => {
-  const response = await fetch(sourceUrl);
+export const fetchLogs = async (sourceUrl, options = {}) => {
+  const { limit, signal } = options;
+  
+  const response = await fetch(sourceUrl, { signal });
   if (!response.ok) {
       throw new Error(`Failed to fetch logs: ${response.statusText}`);
   }
@@ -13,7 +15,13 @@ export const fetchLogs = async (sourceUrl) => {
 
   
 
-  const lines = text.trim().split("\n");
+  let lines = text.trim().split("\n");
+  
+  // Optimization: Only process the last N lines
+  if (limit && lines.length > limit) {
+    lines = lines.slice(-limit);
+  }
+
   const parsedData = lines.map((line, index) => {
     const userMatch = line.match(/USER:\s*(\d+)/);
     const actionMatch = line.match(/,\s*([^,]+),\s*Data:/);
@@ -36,7 +44,7 @@ export const fetchLogs = async (sourceUrl) => {
         }
       })(),
       timestamp: dateMatch ? dateMatch[1] : "N/A",
-      fullText: `USER: ${userMatch ? userMatch[1] : "N/A"}, ${actionMatch ? actionMatch[1].trim() : "N/A"}, Data: ${dataMatch ? dataMatch[1] : "{}"}, Date: ${dateMatch ? dateMatch[1] : "N/A"}`,
+      // fullText removed to save memory. Reconstruct on demand if needed.
       status: "True",
     };
   });
